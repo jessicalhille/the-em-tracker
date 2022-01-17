@@ -39,7 +39,7 @@ function promptSelections() {
                 'Add A Department',
                 'Add A Role',
                 'Add An Employee',
-                'Update An Employee',
+                'Update An Employee Role',
                 'Remove An Employee',
                 'Exit'
             ]
@@ -71,7 +71,7 @@ function promptSelections() {
                     addEmployee();
                     break;
 
-                case 'Update An Employee':
+                case 'Update An Employee Role':
                     updateEmployee();
                     break;
 
@@ -289,4 +289,69 @@ function addEmployee() {
 
 // ========================== UPDATE AN EMPLOYEE ========================== //
 
+function updateEmployee() {
+    var query = 'SELECT * FROM employees';
+
+    db.query(query, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        inquirer
+            .prompt([
+                {
+                    name: 'employee_id',
+                    type: 'input',
+                    message: 'What is the id number for the employee that needs to be updated?'
+                },
+                {
+                    name: 'updated_role',
+                    type: 'input',
+                    message: 'What is the new role id going to be for this employee?'
+                },
+            ])
+            .then(answer => {
+                // insert the new employee into the table based on user input data
+                var query = 'UPDATE employees SET role_id = ? WHERE id = ?'
+                db.query(query, 
+                [
+                    answer.updated_role,
+                    answer.employee_id
+                ],
+                function (err) {
+                    if (err) throw err;
+                    console.log('The role for this employee has been successfully updated!');
+                    promptSelections();
+                });
+            })
+    })
+};
+
 // ========================== DELETE AN EMPLOYEE ========================== //
+
+function removeEmployee() {
+    var query = 'SELECT * FROM employees';
+
+    db.query(query, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        inquirer
+            .prompt([
+                {
+                    name: 'delete',
+                    type: 'input',
+                    message: 'Please enter the id for the employee you would like to remove. (THIS CANNOT BE UNDONE!)'
+                }
+            ])
+            .then(answer => {
+                var query = 'DELETE FROM employees where ?';
+                db.query(query, 
+                {
+                    id: answer.delete
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log('The employee has been successfully removed.');
+                    promptSelections();
+                });
+            })
+    })
+};
