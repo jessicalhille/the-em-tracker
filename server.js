@@ -35,11 +35,14 @@ function promptSelections() {
             choices: [
                 'View All Departments',
                 'View All Roles',
-                'View All Employees',
+                'View All Employees (By ID)',
+                'View All Employees (By Department)',
+                'View All Employees (By Manager)',
                 'Add A Department',
                 'Add A Role',
                 'Add An Employee',
                 'Update An Employee Role',
+                'Update An Employee Manager',
                 'Remove An Employee',
                 'Exit'
             ]
@@ -55,8 +58,16 @@ function promptSelections() {
                     viewRoles();
                     break;
 
-                case 'View All Employees':
+                case 'View All Employees (By ID)':
                     viewEmployees();
+                    break;
+
+                case 'View All Employees (By Department)':
+                    viewEmployeesByDepartment();
+                    break;
+
+                case 'View All Employees (By Manager)':
+                    viewEmployeesByManager();
                     break;
 
                 case 'Add A Department':
@@ -73,6 +84,10 @@ function promptSelections() {
 
                 case 'Update An Employee Role':
                     updateEmployee();
+                    break;
+
+                case 'Update An Employee Manager':
+                    updateEmployeeManager();
                     break;
 
                 case 'Remove An Employee':
@@ -132,6 +147,52 @@ function viewEmployees() {
     INNER JOIN roles ON (roles.id = employees.role_id)
     INNER JOIN departments ON (departments.id = roles.department_id)
     ORDER BY employees.id;`;
+
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        console.log('\n');
+        console.log('=========================');
+        console.log('= VIEWING ALL EMPLOYEES =');
+        console.log('=========================');
+        console.log('\n');
+
+        console.table(res);
+
+        promptSelections();
+    });
+};
+
+// displays all the employees in the database
+function viewEmployeesByDepartment() {
+    var query = `SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name, roles.salary, employees.manager_id
+    FROM employees
+    LEFT JOIN employees manager ON (manager.id = employees.manager_id)
+    INNER JOIN roles ON (roles.id = employees.role_id)
+    INNER JOIN departments ON (departments.id = roles.department_id)
+    ORDER BY departments.department_name;`;
+
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        console.log('\n');
+        console.log('=========================');
+        console.log('= VIEWING ALL EMPLOYEES =');
+        console.log('=========================');
+        console.log('\n');
+
+        console.table(res);
+
+        promptSelections();
+    });
+};
+
+// displays all the employees in the database
+function viewEmployeesByManager() {
+    var query = `SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name, roles.salary, employees.manager_id
+    FROM employees
+    LEFT JOIN employees manager ON (manager.id = employees.manager_id)
+    INNER JOIN roles ON (roles.id = employees.role_id)
+    INNER JOIN departments ON (departments.id = roles.department_id)
+    ORDER BY employees.manager_id;`;
 
     db.query(query, function(err, res) {
         if(err) throw err;
@@ -225,10 +286,16 @@ function addRole() {
 
 // add a new employee into the database
 function addEmployee() {
-    var query = 'SELECT * FROM roles';
+    var query = `SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name, roles.salary, employees.manager_id
+    FROM employees
+    LEFT JOIN employees manager ON (manager.id = employees.manager_id)
+    INNER JOIN roles ON (roles.id = employees.role_id)
+    INNER JOIN departments ON (departments.id = roles.department_id)
+    ORDER BY employees.id;`;
 
     db.query(query, function(err, res) {
         if(err) throw err;
+        console.table(res);
         inquirer
             .prompt([
                 {
@@ -289,6 +356,7 @@ function addEmployee() {
 
 // ========================== UPDATE AN EMPLOYEE ========================== //
 
+// update the role of an employee in the database
 function updateEmployee() {
     var query = 'SELECT * FROM employees';
 
@@ -319,6 +387,43 @@ function updateEmployee() {
                 function (err) {
                     if (err) throw err;
                     console.log('The role for this employee has been successfully updated!');
+                    promptSelections();
+                });
+            })
+    })
+};
+
+// update the manager for an employee in the database
+function updateEmployeeManager() {
+    var query = 'SELECT * FROM employees';
+
+    db.query(query, function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        inquirer
+            .prompt([
+                {
+                    name: 'employee_id',
+                    type: 'input',
+                    message: 'What is the id number for the employee that needs to be updated?'
+                },
+                {
+                    name: 'updated_manager',
+                    type: 'input',
+                    message: 'What is the new manager id going to be for this employee?'
+                },
+            ])
+            .then(answer => {
+                // insert the new employee into the table based on user input data
+                var query = 'UPDATE employees SET manager_id = ? WHERE id = ?'
+                db.query(query, 
+                [
+                    answer.updated_manager,
+                    answer.employee_id
+                ],
+                function (err) {
+                    if (err) throw err;
+                    console.log('The manager for this employee has been successfully updated!');
                     promptSelections();
                 });
             })
