@@ -2,14 +2,16 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
 
-const connection = mysql.createConnection({
+// connection to sql 
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'SQLpassword1!',
     database: 'employee_tracker'
 });
 
-connection.connect(function (err) {
+// start up of the sql server/database
+db.connect(function (err) {
     if (err) {
         throw err;
     }
@@ -23,6 +25,7 @@ connection.connect(function (err) {
     promptSelections();
 });
 
+// prompts the user with a list of options to choose from
 function promptSelections() {
     inquirer
         .prompt({
@@ -41,6 +44,7 @@ function promptSelections() {
                 'Exit'
             ]
         })
+        // based on user selection, one of the functions is triggered
         .then(answer => {
             switch (answer.welcome) {
                 case 'View All Departments':
@@ -76,11 +80,65 @@ function promptSelections() {
                     break;
 
                 case 'Exit':
-                    connection.end();
+                    db.end();
                     break;
             }
         });
-}
+};
 
+// displays all the departments in the database
+function viewDepartments() {
+    var query = `SELECT * FROM departments`;
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        console.log('\n');
+        console.log('===========================');
+        console.log('= VIEWING ALL DEPARTMENTS =');
+        console.log('===========================');
+        console.log('\n');
+        // renders a table with the response from the .sql files
+        console.table(res);
+        // re-displays the original list of options
+        promptSelections();
+    });
+};
 
+//displays all the roles in the database
+function viewRoles() {
+    var query = `SELECT * FROM roles`;
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        console.log('\n');
+        console.log('=====================');
+        console.log('= VIEWING ALL ROLES =');
+        console.log('=====================');
+        console.log('\n');
+
+        console.table(res);
+
+        promptSelections();
+    });
+};
+
+// displays all the employees in the database
+function viewEmployees() {
+    var query = `SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.department_name, roles.salary, employees.manager_id
+    FROM employees
+    LEFT JOIN employees manager ON (manager.id = employees.manager_id)
+    INNER JOIN roles ON (roles.id = employees.role_id)
+    INNER JOIN departments ON (departments.id = roles.department_id)
+    ORDER BY employees.id;`;
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        console.log('\n');
+        console.log('=========================');
+        console.log('= VIEWING ALL EMPLOYEES =');
+        console.log('=========================');
+        console.log('\n');
+
+        console.table(res);
+
+        promptSelections();
+    });
+};
 
