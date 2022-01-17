@@ -8,34 +8,33 @@
 
   ## Description
   A command-line application to manage a company's employee database. This application uses Node.js, Inquirer, and MySQL.
-  ##### Link to Deployed Application: undefined
+  
+  ##### Link to Walkthrough Video:
 
   ## Table of Contents
   * [Installation](#installation)
   * [Usage](#usage)
   * [Contributing](#contributing)
   * [Tests](#tests)
-  * [Credits](#credits)
   * [License](#license)
   * [Questions](#questions)
 
   ## Installation
-  To use this application, please install:
-  * npm install inquirer, npm install mysql2, npm install console.table
+  To use this application, you need to install Inquirer, MySQL2, and console.table. You can do that by running the following commands into your terminal:
+  * npm install inquirer
+  * npm install mysql2
+  * npm install console.table
 
   ## Usage
-  After cloning the repository from github, please follow the instructions above for how to install the necessary packages. Once this is done, you can initialize the application by typing npm start. You will then be presented with a list of options, which will take you to different menu options from there.
+  After cloning the repository from GitHub, please follow the instructions above for how to install the necessary packages. If you would like, you can edit the schema.sql and the seeds.sql files as needed for your own use. To use these files, run MySQL and source the files. Once this is done, you can initialize the application by typing npm start or node server.js into the command line. You will then be presented with a list of selection choices, which will take you to different prompts from there.
   ### Screenshot of Deployed Application
-  
+  <img width="911" alt="Screen Shot 2022-01-16 at 9 38 33 PM" src="https://user-images.githubusercontent.com/91511805/149704915-7bbf5255-e8fc-4463-9c58-fc78e7e04052.png">
 
   ## Contributing
   No guidelines for contributing at this time.
 
   ## Tests
-  No tests required for this appication.
-
-  ## Credits
-  None
+  No tests are required for this appication.
 
   ## License
   This project is licensed under the MIT license.
