@@ -262,7 +262,8 @@ function addRole() {
                             departmentArray.push(res[i].department_name);
                         }
                         return departmentArray;
-                    }
+                    },
+                    message: 'What department does this role belong to?'
                 }
             ])
             .then(answer => {
