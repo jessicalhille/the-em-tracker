@@ -1,3 +1,4 @@
+
 INSERT INTO departments (department_name)
 VALUES
 ('Sales'),
@@ -20,8 +21,8 @@ VALUES
 ('Jimmy', 'Choo', 1, null),
 ('Harold', 'Smith', 2, 1),
 ('Carson', 'Williams', 2, 1),
-('Jennifer', 'Thomas', 4, null),
-('Taylor', 'Jones', 5, 4),
-('August', 'Harrison', 6, null),
-('Tyquan', 'Grant', 7, null),
-('Victoria', 'Rodriguez', 8, 7);
+('Jennifer', 'Thomas', 3, null),
+('Taylor', 'Jones', 4, 4),
+('August', 'Harrison', 5, null),
+('Tyquan', 'Grant', 6, null),
+('Victoria', 'Rodriguez', 7, 7);

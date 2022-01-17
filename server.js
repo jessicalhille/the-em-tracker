@@ -18,8 +18,10 @@ db.connect(function (err) {
     console.log(`
     ===============================================================
     
+
             THE 'EM' TRACKER: an employee management system
 
+            
     ===============================================================
     `)
     promptSelections();
