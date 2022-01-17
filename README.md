@@ -1,5 +1,7 @@
 # The 'EM' Tracker
   ![made-with](https://img.shields.io/badge/Made%20with-Node.js-1f425f.svg)
+  ![made-with](https://img.shields.io/badge/Made%20with-Inquirer-1f425f.svg)
+  ![made-with](https://img.shields.io/badge/Made%20with-MySQL-1f425f.svg)
   ![GitHub issues](https://img.shields.io/github/issues/jessicalhille/the-em-tracker)
   ![GitHub branches](https://badgen.net/github/branches/jessicalhille/the-em-tracker)
   ![GitHub contributors](https://img.shields.io/github/contributors/jessicalhille/the-em-tracker)
