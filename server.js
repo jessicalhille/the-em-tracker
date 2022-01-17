@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const consoleTable = require('console.table');
+require('console.table');
 
 // connection to sql 
 const db = mysql.createConnection({
@@ -86,9 +86,12 @@ function promptSelections() {
         });
 };
 
+// ========================== VIEW ALL ========================== //
+
 // displays all the departments in the database
 function viewDepartments() {
     var query = `SELECT * FROM departments`;
+
     db.query(query, function(err, res) {
         if(err) throw err;
         console.log('\n');
@@ -106,6 +109,7 @@ function viewDepartments() {
 //displays all the roles in the database
 function viewRoles() {
     var query = `SELECT * FROM roles`;
+
     db.query(query, function(err, res) {
         if(err) throw err;
         console.log('\n');
@@ -128,6 +132,7 @@ function viewEmployees() {
     INNER JOIN roles ON (roles.id = employees.role_id)
     INNER JOIN departments ON (departments.id = roles.department_id)
     ORDER BY employees.id;`;
+
     db.query(query, function(err, res) {
         if(err) throw err;
         console.log('\n');
@@ -142,3 +147,146 @@ function viewEmployees() {
     });
 };
 
+// ========================== ADD TO THE DATABASE ========================== //
+
+// add a new department into the database
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                name: 'new_department',
+                type: 'input',
+                message: 'What is the name of the new department you would like to add?'
+            }
+        ])
+        // takes the user input and creates a new department_name in the departments table
+        .then(answer => {
+            var query = 'INSERT INTO departments SET ?';
+            db.query(query,
+                {
+                    department_name: answer.new_department
+                });
+
+            console.log('Your new department has been added successfully!');
+            promptSelections();
+        });
+};
+
+// add a new role into the database
+function addRole() {
+    var query = 'SELECT * FROM departments';
+
+    db.query(query, function(err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: 'role',
+                    type: 'input',
+                    message: 'What is the title of the new role you would like to add?'
+                },
+                {
+                    name: 'salary',
+                    type: 'input',
+                    message: 'What yearly salary does this role earn? (Number with no punctuation)'
+                },
+                {
+                    name: 'department',
+                    type: 'list',
+                    choices: function() {
+                        var departmentArray = [];
+                        for (i = 0; i < res.length; i++) {
+                            departmentArray.push(res[i].department_name);
+                        }
+                        return departmentArray;
+                    }
+                }
+            ])
+            .then(answer => {
+                let department_id;
+                for (i = 0; i < res.length; i++) {
+                    if (res[i].department_name === answer.department) {
+                        department_id = res[i].id;
+                    }
+                }
+                var query = 'INSERT INTO roles SET ?';
+                db.query(query,
+                    {
+                        title: answer.role,
+                        salary: answer.salary,
+                        department_id: department_id
+                    });
+                
+                console.log('Your new role has been added successfully!');
+                promptSelections();
+            });
+    })
+};
+
+// add a new employee into the database
+function addEmployee() {
+    var query = 'SELECT * FROM roles';
+
+    db.query(query, function(err, res) {
+        if(err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: 'first_name',
+                    type: 'input',
+                    message: 'What is the first name of this employee?'
+                },
+                {
+                    name: 'last_name',
+                    type: 'input',
+                    message: 'What is the last name of this employee?'
+                },
+                {
+                    name: 'employee_role',
+                    type: 'list',
+                    choices: function() {
+                        // create an array to display the role options
+                        var roleArray = [];
+                        for (i = 0; i < res.length; i++) {
+                            roleArray.push(res[i].title);
+                        }
+                        // show all role options
+                        return roleArray;
+                    },
+                    message: 'What role will this employee have?'
+                },
+                {
+                    name: 'employee_manager',
+                    type: 'input',
+                    message: 'What is the manager id for this employee?'
+                }
+            ])
+            .then(answer => {
+                let role_id;
+                for (i = 0; i < res.length; i++) {
+                    // taking the role title response and turning it back into the role id for the table
+                    if (res[i].title === answer.employee_role) {
+                        role_id = res[i].id;
+                    }
+                }
+                // insert the new employee into the table based on user input data
+                var query = 'INSERT INTO employees SET ?'
+                db.query(query, 
+                {
+                    first_name: answer.first_name,
+                    last_name: answer.last_name,
+                    manager_id: answer.employee_manager,
+                    role_id: role_id
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log('Your new employee has been added successfully!');
+                    promptSelections();
+                });
+            })
+    })
+};
+
+// ========================== UPDATE AN EMPLOYEE ========================== //
+
+// ========================== DELETE AN EMPLOYEE ========================== //
